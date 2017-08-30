@@ -25,7 +25,26 @@ How many Lychrel numbers are there below ten-thousand?
 from datetime import datetime
 start = datetime.now()
 
+# list of numbers 0 - 9999, all zero
+# check up to 50 iterations of permutation sums for palindrome
 
+n = 10000
+lychrel = [1]*n
+lychrel[0] = 0
+
+# start at 5 so don't get single digit palindromes
+for i in range(1,n):
+    count = 0
+    s = str(i)
+    while( (lychrel[i]) & (count < 50) ):
+        total = str( int(s) + int(s[::-1]) )
+        count += 1
+        if (total == total[::-1]):
+            lychrel[i] = 0
+            #print(i, total, count)
+        s = total
+    #if(count == 50): print(i, total, count)
+print(sum(lychrel))
 
 end = datetime.now()
 print( "runtime = %s" % (end - start) )

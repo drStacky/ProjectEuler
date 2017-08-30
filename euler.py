@@ -50,7 +50,7 @@ def is_prime(number):
         return True
     return False
 
-# returns True is check is a permutation of ref (works on strings and integers)
+# returns True if check is a permutation of ref (works on strings and integers)
 def is_perm(check, ref):
     return str(check) in map( ''.join, itertools.permutations( str(ref) ) )
 
