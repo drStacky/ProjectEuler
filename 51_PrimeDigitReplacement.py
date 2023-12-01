@@ -9,44 +9,74 @@ Find the smallest prime which, by replacing part of the number (not necessarily 
 
 @author: mstackpo
 '''
-
+import math
 from datetime import datetime
-start = datetime.now()
 
-from euler import next_prime, is_prime
+import numpy as np
 
-prime = next_prime()
-p = next(prime)
 
-max_count = 0
-max_p = 0
-max_p_set = set({})
+def number_to_array(n: int) -> np.array:
+    '''Convert number into array of digits, with idx=0 as ones place'''
+    return np.array([
+        n % 10**(i+1) // 10**i
+        for i in range(int(math.log10(n)) + 1)
+    ])
 
-while p < 100000:
-    p = next(prime)
 
-while max_count < 8:
-    p = str(next(prime))
-    if int(p) not in max_p_set and len(set(p)) < len(p):                # Check for repeated digits
-        for i in range(0,len(p)):
-            if [digit for digit in p].count(p[i]) > 1:                  # If digit appears more than once
-                p_set = set({})                                         # Counts the number of primes made by replacing digits
-                for j in range(0,10):
-                    z = int(p.replace(p[i],str(j)))
-                    if z < int(p): break
-                    if is_prime(z):
-                        p_set.add(z)
-                p_count = 0
-                # For the numbers made by replacing digits, if the number is prime, add to the count
-                # Funny case: p = 113, we do not want to count 003 = 3, hence the check for number of digits
-                for num in p_set:
-                    if len(str(num)) == len(p) and is_prime(num): p_count += 1
-        if max_count < p_count:
-            max_count = p_count
-            max_p = p
-            max_p_set = p_set
-            print(max_p_set)
-print(p, max_p_set, p_count)
+def array_to_number(digits: np.array) -> int:
+    '''Converts a list of digits into a number, assuming ones place in idx=0'''
+    return sum(d*10**i for i, d in enumerate(digits))
 
-end = datetime.now()
-print( "runtime = %s" % (end - start) )
+
+def is_prime_list(limit):
+    is_prime = [True] * limit                          # Initialize the primality list
+    is_prime[0] = is_prime[1] = False
+
+    for i in range(2, limit):
+        if is_prime[i]:
+            for n in range(2*i, limit, i):     # Mark factors non-prime
+                is_prime[n] = False
+
+    return is_prime
+
+
+def explore_prime_families(max_limit):
+    is_prime = is_prime_list(2 * max_limit)
+    for i in range(max_limit//2):
+        if is_prime[i]:
+            digits = number_to_array(i)
+
+            for num_repeats in range(1, 4):
+                d = -1
+                while d < 11 - num_repeats:
+                    d += 1
+                    if (digits == d).sum() == num_repeats:
+                        break
+                if d < 11 - num_repeats:
+                    locs = np.where(digits == d)[0]
+                    primes = []
+                    for new_d in range(d, 10):
+                        if i == 1021:
+                            temp = 0
+                        new_digits = digits.copy()
+                        new_digits[locs] = new_d
+                        new_number = array_to_number(new_digits)
+                        if is_prime[new_number]:
+                            primes.append(new_number)
+                    if len(primes) == size_prime_family:
+                        return primes
+
+
+if __name__ == '__main__':
+    start = datetime.now()
+
+    size_prime_family = 8
+
+    max_limit = 1_000_000
+    # max_limit = 50_000
+
+    primes = explore_prime_families(max_limit)
+    print(primes)
+
+    end = datetime.now()
+    print(f'\nruntime = {end - start}')
