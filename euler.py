@@ -134,3 +134,16 @@ def powers(n):
         if i in pows:
             yield i
         pows.update(i**x for x in range(2, int(math.log(n,i)) + 1 ))
+
+
+def is_prime_list(limit):
+    '''Returns a list of length limit with boolean True if position is prime'''
+    is_prime = [True] * limit                  # Initialize the primality list
+    is_prime[0] = is_prime[1] = False
+
+    for i in range(2, limit):
+        if is_prime[i]:
+            for n in range(2*i, limit, i):     # Mark factors non-prime
+                is_prime[n] = False
+
+    return is_prime

@@ -14,6 +14,8 @@ from datetime import datetime
 
 import numpy as np
 
+from euler import is_prime_list
+
 
 def number_to_array(n: int) -> np.array:
     '''Convert number into array of digits, with idx=0 as ones place'''
@@ -26,18 +28,6 @@ def number_to_array(n: int) -> np.array:
 def array_to_number(digits: np.array) -> int:
     '''Converts a list of digits into a number, assuming ones place in idx=0'''
     return sum(d*10**i for i, d in enumerate(digits))
-
-
-def is_prime_list(limit):
-    is_prime = [True] * limit                          # Initialize the primality list
-    is_prime[0] = is_prime[1] = False
-
-    for i in range(2, limit):
-        if is_prime[i]:
-            for n in range(2*i, limit, i):     # Mark factors non-prime
-                is_prime[n] = False
-
-    return is_prime
 
 
 def explore_prime_families(max_limit):
